@@ -84,3 +84,17 @@ jobs:
           context: ./app
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/secure-ci-cd:latest
+
+      - name: Verify Docker Image (Run & Curl)
+        run: |
+          echo "Starting container..."
+          docker run -d -p 3000:3000 --name test-app ${{ secrets.DOCKER_USERNAME }}/secure-ci-cd:latest
+          
+          echo "Waiting for application to start..."
+          sleep 10
+          
+          echo "Testing endpoint..."
+          curl -f http://localhost:3000 || exit 1
+          
+          echo "✅ Application is running and responding correctly!"
+          docker stop test-app
